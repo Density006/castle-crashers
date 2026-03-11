@@ -1,5 +1,83 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1 Castle Crashers
+  p.subtitle Destroy the kingdom's castles before they fortify!
+
+  #game
+    #status
+    #castles
+    #controls
+      h3 Attack a Castle
+      .attack-buttons
+        button.attack-btn(data-type="charge" disabled) Charge (10-110 dmg)
+        button.attack-btn(data-type="catapult" disabled) Catapult (0-1000 dmg, risky)
+        button.attack-btn(data-type="arrows" disabled) Arrows (kill 2-12 builders)
+      p.hint Click a castle to select it, then choose an attack.
+
+  script.
+    var selectedCastle = null;
+
+    function fetchCastles() {
+      fetch('/castles')
+        .then(function(r) {
+          if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+          return r.json();
+        })
+        .then(renderCastles)
+        .catch(function(err) {
+          document.getElementById('status').textContent = err.message;
+          document.getElementById('status').className = 'destroyed';
+          document.getElementById('castles').innerHTML = '';
+          disableButtons();
+        });
+    }
+
+    function renderCastles(castles) {
+      var container = document.getElementById('castles');
+      container.innerHTML = '';
+      castles.forEach(function(c, i) {
+        var div = document.createElement('div');
+        div.className = 'castle' + (c.hp <= 0 ? ' dead' : '') + (selectedCastle === c.id ? ' selected' : '');
+        div.innerHTML = '<h2>Castle ' + (i + 1) + '</h2>'
+          + '<div class="hp-bar"><div class="hp-fill" style="width:' + Math.max(0, c.hp / 10) + '%"></div></div>'
+          + '<p>HP: ' + c.hp + '</p>'
+          + '<p>Builders: ' + c.builders + '</p>';
+        if (c.hp > 0) {
+          div.onclick = function() {
+            selectedCastle = c.id;
+            enableButtons();
+            renderCastles(castles);
+          };
+        }
+        container.appendChild(div);
+      });
+    }
+
+    function enableButtons() {
+      document.querySelectorAll('.attack-btn').forEach(function(b) { b.disabled = false; });
+    }
+
+    function disableButtons() {
+      document.querySelectorAll('.attack-btn').forEach(function(b) { b.disabled = true; });
+    }
+
+    document.querySelectorAll('.attack-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (!selectedCastle) return;
+        var type = btn.getAttribute('data-type');
+        fetch('/castles/' + selectedCastle + '/attack', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: type })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          document.getElementById('status').textContent = data.message + ' (HP: ' + data.castle.hp + ')';
+          document.getElementById('status').className = data.castle.hp <= 0 ? 'destroyed' : '';
+          fetchCastles();
+        });
+      });
+    });
+
+    fetchCastles();

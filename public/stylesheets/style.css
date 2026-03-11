@@ -1,8 +1,118 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 30px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  min-height: 100vh;
 }
 
-a {
-  color: #00B7FF;
+h1 {
+  font-size: 2.5rem;
+  color: #e94560;
+  text-align: center;
+  margin-bottom: 5px;
 }
+
+.subtitle {
+  text-align: center;
+  color: #aaa;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+#status {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 10px;
+  margin-bottom: 20px;
+  color: #0f0;
+  min-height: 40px;
+}
+
+#status.destroyed {
+  color: #e94560;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+#castles {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.castle {
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  padding: 20px;
+  width: 200px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.castle:hover { transform: translateY(-3px); border-color: #e94560; }
+.castle.selected { border-color: #e94560; box-shadow: 0 0 15px rgba(233,69,96,0.4); }
+.castle.dead { opacity: 0.4; cursor: default; border-color: #333; }
+.castle.dead:hover { transform: none; border-color: #333; }
+
+.castle h2 {
+  color: #e94560;
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
+
+.castle p { margin: 5px 0; font-size: 0.95rem; }
+
+.hp-bar {
+  background: #333;
+  border-radius: 6px;
+  height: 14px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.hp-fill {
+  background: linear-gradient(90deg, #e94560, #0f0);
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+#controls {
+  text-align: center;
+  background: #16213e;
+  border-radius: 12px;
+  padding: 25px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+#controls h3 { margin-bottom: 15px; color: #e94560; }
+
+.attack-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.attack-btn {
+  background: #0f3460;
+  color: #eee;
+  border: 2px solid #e94560;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.attack-btn:hover:not(:disabled) { background: #e94560; }
+.attack-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.hint { color: #666; margin-top: 12px; font-size: 0.85rem; }
